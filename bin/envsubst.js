@@ -44,7 +44,7 @@ const cli = meow(
   });
 
   if (replacements.length < 1) {
-    console.log('No variable replacements made.');
+    console.info('No variable replacements made.');
     return;
   }
 
