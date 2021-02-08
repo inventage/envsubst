@@ -1,28 +1,50 @@
 {
   "name": "@inventage/envsubst",
-  "version": "0.0.1-beta.0",
   "description": "Environment variables substitution for Node",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "license": "MIT",
+  "author": "Peter Siska <psiska@inventage.com>",
+  "homepage": "https://github.com/inventage/envsubst#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/inventage/envsubst.git"
   },
-  "keywords": [
-    "node",
-    "npm",
-    "envsubst",
-    "environment",
-    "env",
-    "vars",
-    "variables"
-  ],
-  "author": "Peter Siska <psiska@inventage.com>",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "homepage": "https://github.com/inventage/envsubst#readme"
+  "version": "0.0.1-beta.0",
+  "main": "index.js",
+  "bin": {
+    "envsubst": "./bin/envsubst.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "prettier '**/*.js' --check",
+    "format": "prettier '**/*.js' --write"
+  },
+  "dependencies": {
+    "cli-table3": "^0.6.0",
+    "globby": "^11.0.2",
+    "meow": "^9.0.0",
+    "replace-in-file": "^6.2.0"
+  },
+  "keywords": [
+    "env",
+    "environment",
+    "envsubst",
+    "node",
+    "npm",
+    "variables",
+    "vars"
+  ],
+  "devDependencies": {
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
 }
