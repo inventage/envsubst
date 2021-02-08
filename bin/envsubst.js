@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const path = require('path');
 const meow = require('meow');
 const globby = require('globby');
 const replace = require('replace-in-file');
@@ -9,10 +8,21 @@ const cli = meow(
   `
   Usage
     $ envsubst <glob>
+    
+  Options
+    --dry-run, -d  Do not edit any files
 
   Examples
     $ envsubst 'dist/**/*.js'
-`
+`,
+  {
+    flags: {
+      dryRun: {
+        type: 'boolean',
+        alias: 'd',
+      },
+    },
+  }
 );
 
 (async () => {
@@ -22,7 +32,7 @@ const cli = meow(
   await replace({
     files,
     from: /\${(\w+)(:-(\w+))?}/gm,
-    // dry: true,
+    dry: !!cli.flags.dryRun,
     to: (...args) => {
       const [string, name, , fallback] = args;
       const { length, [length - 1]: filename } = args;
