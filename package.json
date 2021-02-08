@@ -1,0 +1,28 @@
+{
+  "name": "@inventage/envsubst",
+  "version": "0.0.1-beta.0",
+  "description": "Environment variables substitution for Node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inventage/envsubst.git"
+  },
+  "keywords": [
+    "node",
+    "npm",
+    "envsubst",
+    "environment",
+    "env",
+    "vars",
+    "variables"
+  ],
+  "author": "Peter Siska <psiska@inventage.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/inventage/envsubst/issues"
+  },
+  "homepage": "https://github.com/inventage/envsubst#readme"
+}
