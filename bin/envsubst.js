@@ -11,9 +11,11 @@ const cli = meow(
     
   Options
     --dry-run, -d  Do not edit any files
+    --prefix, -p   Only replace variable names with the given prefix
 
   Examples
     $ envsubst 'dist/**/*.js'
+    $ envsubst 'dist/**/*.js' -p FOO_
 `,
   {
     flags: {
@@ -21,17 +23,23 @@ const cli = meow(
         type: 'boolean',
         alias: 'd',
       },
+      prefix: {
+        type: 'string',
+        alias: 'p',
+      },
     },
   }
 );
 
 (async () => {
   const files = await globby(cli.input);
+  const pattern = `\\\${(${cli.flags.prefix ?? ''}\\w+)(:-(\\w+))?}`;
+  const regex = new RegExp(pattern, 'gm');
   const replacements = [];
 
   await replace({
     files,
-    from: /\${(\w+)(:-(\w+))?}/gm,
+    from: regex,
     dry: !!cli.flags.dryRun,
     to: (...args) => {
       const [string, name, , fallback] = args;
