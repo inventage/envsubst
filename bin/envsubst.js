@@ -3,6 +3,7 @@ const meow = require('meow');
 const globby = require('globby');
 const replace = require('replace-in-file');
 const Table = require('cli-table3');
+const { regexPattern } = require('../src/utils');
 
 const cli = meow(
   `
@@ -33,7 +34,7 @@ const cli = meow(
 
 (async () => {
   const files = await globby(cli.input);
-  const pattern = `\\\${(${cli.flags.prefix ?? ''}\\w+)(:-(\\w+))?}`;
+  const pattern = regexPattern(cli.flags.prefix);
   const regex = new RegExp(pattern, 'gm');
   const replacements = [];
 
