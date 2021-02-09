@@ -75,7 +75,7 @@ const cli = meow(
     },
   });
 
-  console.info(`Made ${replacements.length} replacement${replacements.length > 1 ? 's' : ''}:`);
+  console.info(`Made ${replacements.length} replacement${replacements.length > 1 ? 's' : ''}:\n`);
   replacements.forEach(replacement => {
     const { filename, name, value } = replacement;
     table.push([filename, name, value]);
