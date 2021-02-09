@@ -17,15 +17,21 @@
     "envsubst": "./bin/envsubst.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier '**/*.js' --write",
     "lint": "prettier '**/*.js' --check",
-    "format": "prettier '**/*.js' --write"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
     "globby": "^11.0.2",
     "meow": "^9.0.0",
     "replace-in-file": "^6.2.0"
+  },
+  "devDependencies": {
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0"
   },
   "keywords": [
     "env",
@@ -36,11 +42,8 @@
     "variables",
     "vars"
   ],
-  "devDependencies": {
-    "husky": "^5.0.9",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.2.1",
-    "pretty-quick": "^3.1.0"
+  "publishConfig": {
+    "access": "public"
   },
   "husky": {
     "hooks": {
