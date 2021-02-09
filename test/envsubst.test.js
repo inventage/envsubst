@@ -46,6 +46,19 @@ describe('envsubst CLI execution', () => {
     });
   });
 
+  it('shows a version', done => {
+    const child = spawn('node', [CLI_FILE, '--version']);
+
+    child.stdout.on('data', data => {
+      expect(`${data}`).toEqual(pkg.version);
+    });
+
+    child.on('close', code => {
+      expect(code).toEqual(0);
+      done();
+    });
+  });
+
   const mockDirs = fs
     .readdirSync(TEMP_DIR)
     .map(file => path.resolve(TEMP_DIR, file))
