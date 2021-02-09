@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const fse = require('fs-extra');
+const rimraf = require('rimraf');
 const path = require('path');
 const pkg = require('../package.json');
 const dotenv = require('dotenv');
@@ -16,7 +17,7 @@ fse.copySync(MOCKS_DIR, TEMP_DIR);
 
 // Cleanup by removing the temporary directory after we're done
 afterAll(() => {
-  fs.rmdirSync(TEMP_DIR, { recursive: true });
+  rimraf.sync(TEMP_DIR);
 });
 
 describe('envsubst CLI execution', () => {

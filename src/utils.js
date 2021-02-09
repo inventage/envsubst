@@ -1,3 +1,6 @@
+const matchAll = require('string.prototype.matchall');
+matchAll.shim();
+
 /**
  * Regex pattern with an optional prefix.
  *
