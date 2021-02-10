@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const meow = require('meow');
+const fs = require('fs');
 const globby = require('globby');
-const replace = require('replace-in-file');
 const Table = require('cli-table3');
-const { regexPattern } = require('../src/utils');
+const { replaceVars } = require('../src/utils');
 
 const cli = meow(
   `
@@ -33,34 +33,26 @@ const cli = meow(
 );
 
 (async () => {
+  /** @type string[] */
   const files = await globby(cli.input);
-  const pattern = regexPattern(cli.flags.prefix);
-  const regex = new RegExp(pattern, 'gm');
   const replacements = [];
 
-  await replace({
-    files,
-    from: regex,
-    dry: !!cli.flags.dryRun,
-    to: (...args) => {
-      const [string, name, , fallback] = args;
-      const { length, [length - 1]: filename } = args;
+  for (const file of files) {
+    const content = fs.readFileSync(file, 'utf-8');
+    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix);
 
-      // Check if the found variable name is available in process.env
-      const value = process.env[name] || fallback;
-      if (!value) {
-        return string;
-      }
-
+    replacementsMade.forEach(r =>
       replacements.push({
-        filename,
-        name,
-        value,
-      });
+        filename: file,
+        name: r.from,
+        value: r.to,
+      })
+    );
 
-      return value;
-    },
-  });
+    if (!cli.flags.dryRun) {
+      fs.writeFileSync(file, replaced, 'utf-8');
+    }
+  }
 
   if (replacements.length < 1) {
     console.info('No variable replacements made.');

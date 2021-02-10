@@ -25,7 +25,6 @@
     "cli-table3": "^0.6.0",
     "globby": "^11.0.2",
     "meow": "^9.0.0",
-    "replace-in-file": "^6.2.0",
     "string.prototype.matchall": "^4.0.3"
   },
   "devDependencies": {
