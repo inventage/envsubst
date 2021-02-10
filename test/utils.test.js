@@ -12,22 +12,76 @@ describe('dynamic regex pattern', () => {
 
 describe('variable replacement', () => {
   it('simple replacements ', async () => {
-    expect(await replaceVars('${VAR}')).toEqual('${VAR}');
-    expect(await replaceVars('${VAR}', { VAR: 'foo' })).toEqual('foo');
-    expect(await replaceVars('${VAR?}', { VAR: 'foo' })).toEqual('${VAR?}');
+    let [replaced, replacements] = await replaceVars('${VAR}');
+    expect(replaced).toEqual('${VAR}');
+    expect(replacements).toEqual([]);
+
+    [replaced, replacements] = await replaceVars('${VAR}', { VAR: 'foo' });
+    expect(replaced).toEqual('foo');
+    expect(replacements).toEqual([{ from: '${VAR}', to: 'foo', count: 1 }]);
+
+    [replaced, replacements] = await replaceVars('${VAR}${VAR}', { VAR: 'foo' });
+    expect(replaced).toEqual('foofoo');
+    expect(replacements).toEqual([{ from: '${VAR}', to: 'foo', count: 2 }]);
+
+    [replaced, replacements] = await replaceVars('${VAR?}', { VAR: 'foo' });
+    expect(replaced).toEqual('${VAR?}');
+    expect(replacements).toEqual([]);
   });
 
   it('complex replacements', async () => {
-    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' })).toEqual(`foo\nbar`);
-    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' })).toEqual(`foo\nbaz`);
-    expect(await replaceVars(`\${VAR:-yes?}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' })).toEqual(`\${VAR:-yes?}\nbaz`);
-    expect(await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' })).toEqual(`foo\nbaz`);
-    expect(await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { FOO: 'baz' })).toEqual(`yes\nbaz`);
+    let [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' });
+    expect(replaced).toEqual(`foo\nbar`);
+    expect(replacements).toEqual([
+      { from: '${VAR}', to: 'foo', count: 1 },
+      { from: '${FOO:-bar}', to: 'bar', count: 1 },
+    ]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });
+    expect(replaced).toEqual(`foo\nbaz`);
+    expect(replacements).toEqual([
+      { from: '${VAR}', to: 'foo', count: 1 },
+      { from: '${FOO:-bar}', to: 'baz', count: 1 },
+    ]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}\${FOO:-bar}\${FOO}`, { VAR: 'foo', FOO: 'baz' });
+    expect(replaced).toEqual(`foo\nbazbazbaz`);
+    expect(replacements).toEqual([
+      { from: '${VAR}', to: 'foo', count: 1 },
+      { from: '${FOO:-bar}', to: 'baz', count: 2 },
+      { from: '${FOO}', to: 'baz', count: 1 },
+    ]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR:-yes?}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });
+    expect(replaced).toEqual(`\${VAR:-yes?}\nbaz`);
+    expect(replacements).toEqual([{ from: '${FOO:-bar}', to: 'baz', count: 1 }]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });
+    expect(replaced).toEqual(`foo\nbaz`);
+    expect(replacements).toEqual([
+      { from: '${VAR:-yes}', to: 'foo', count: 1 },
+      { from: '${FOO:-bar}', to: 'baz', count: 1 },
+    ]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { FOO: 'baz' });
+    expect(replaced).toEqual(`yes\nbaz`);
+    expect(replacements).toEqual([
+      { from: '${VAR:-yes}', to: 'yes', count: 1 },
+      { from: '${FOO:-bar}', to: 'baz', count: 1 },
+    ]);
   });
 
   it('prefix replacements', async () => {
-    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' }, 'FOO_')).toEqual(`\${VAR}\n\${FOO:-bar}`);
-    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' }, 'FOO_')).toEqual(`\${VAR}\n\${FOO:-bar}`);
-    expect(await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', FOO_2: 'baz' }, 'FOO_')).toEqual(`\${VAR}\nbaz`);
+    let [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' }, 'FOO_');
+    expect(replaced).toEqual(`\${VAR}\n\${FOO:-bar}`);
+    expect(replacements).toEqual([]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' }, 'FOO_');
+    expect(replaced).toEqual(`\${VAR}\n\${FOO:-bar}`);
+    expect(replacements).toEqual([]);
+
+    [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', FOO_2: 'baz' }, 'FOO_');
+    expect(replaced).toEqual(`\${VAR}\nbaz`);
+    expect(replacements).toEqual([{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
   });
 });

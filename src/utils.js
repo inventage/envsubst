@@ -27,20 +27,23 @@ const replaceVars = (string, variables = {}, prefix = '') =>
     const matches = [...string.matchAll(regex)];
 
     let replaced = string;
+    const replacements = [];
     for (const match of matches) {
       const [original, name, , fallback] = match;
+      const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      if (value) {
+        const replacement = replacements.find(r => r.from === original && r.to === value);
+        if (replacement) {
+          replacement.count = replacement.count + 1;
+        } else {
+          replacements.push({ from: original, to: value, count: 1 });
+        }
 
-      // Variable key exists, use that value
-      if (Object.hasOwnProperty.call(variables || {}, name)) {
-        replaced = replaced.split(original).join(variables[name]);
-      }
-      // Variable key does not exist, use fallback
-      else if (!variables[name] && fallback) {
-        replaced = replaced.split(original).join(fallback);
+        replaced = replaced.split(original).join(value);
       }
     }
 
-    resolve(replaced);
+    resolve([replaced, replacements]);
   });
 
 module.exports = {
