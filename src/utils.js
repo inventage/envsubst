@@ -16,9 +16,9 @@ const regexPattern = (prefix = '') => {
  * Replaces all variable placeholders in the given string with either variable values
  * found in the variables parameter OR with the given default in the variable string.
  *
- * @param string
- * @param variables
- * @param prefix
+ * @param {string} string
+ * @param {object} variables
+ * @param {string} prefix
  * @returns {Promise<string>}
  */
 const replaceVars = (string, variables = {}, prefix = '') =>

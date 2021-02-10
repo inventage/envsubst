@@ -24,4 +24,10 @@ describe('variable replacement', () => {
     expect(await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' })).toEqual(`foo\nbaz`);
     expect(await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { FOO: 'baz' })).toEqual(`yes\nbaz`);
   });
+
+  it('prefix replacements', async () => {
+    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' }, 'FOO_')).toEqual(`\${VAR}\n\${FOO:-bar}`);
+    expect(await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' }, 'FOO_')).toEqual(`\${VAR}\n\${FOO:-bar}`);
+    expect(await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', FOO_2: 'baz' }, 'FOO_')).toEqual(`\${VAR}\nbaz`);
+  });
 });
