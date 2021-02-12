@@ -3,7 +3,7 @@
 
 name: Main Workflow
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   # Run codestyle checks
@@ -43,7 +43,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [ 10.x, 12.x, 14.x, 15.x ]
 
     steps:
       - name: Checkout Code

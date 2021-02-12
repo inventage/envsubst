@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  dist:
+    name: Distribution (binaries)
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Dependencies
+        run: npm ci
+
+      - name: Dist
+        run: npm run dist
+
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/linux/envsubst
+          asset_name: envsubst-${{ github.event.release.tag_name }}-linux-x86_64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/macos/envsubst
+          asset_name: envsubst-${{ github.event.release.tag_name }}-macos-x86_64
+          asset_content_type: binary/octet-stream
+
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/win/envsubst
+          asset_name: envsubst-${{ github.event.release.tag_name }}-win-x86_64.exe
+          asset_content_type: binary/octet-stream
