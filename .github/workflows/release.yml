@@ -1,3 +1,7 @@
+# Inspiration / sources:
+#
+# @see https://github.community/t/can-you-add-binaries-to-releases-with-github-actions/16665/8
+# @see https://github.com/Blacksmoke16/oq/pull/47/files#diff-082c28d748ad2e3eecc5508d740d9417R9-R29
 name: Release
 
 on:
