@@ -21,11 +21,16 @@
     "format": "prettier '**/*.js' --write",
     "lint": "prettier '**/*.js' --check",
     "test": "jest",
-    "dist": "npm run clean && run-p -l dist:*",
+    "dist": "npm run clean && npm run fetch && run-p -l dist:*",
     "dist:linux": "pkg -t node14-linux-x64 --out-path dist/linux .",
     "dist:alpine": "pkg -t node14-alpine-x64 --out-path dist/alpine .",
     "dist:macos": "pkg -t node14-macos-x64 --out-path dist/macos .",
-    "dist:win": "pkg -t node14-win-x64 --out-path dist/win ."
+    "dist:win": "pkg -t node14-win-x64 --out-path dist/win .",
+    "fetch": "run-p -l fetch:*",
+    "fetch:linux": "pkg-fetch node14 linux x64",
+    "fetch:alpine": "pkg-fetch node14 alpine x64",
+    "fetch:macos": "pkg-fetch node14 macos x64",
+    "fetch:win": "pkg-fetch node14 win x64"
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
@@ -41,6 +46,7 @@
     "lint-staged": "^10.5.4",
     "npm-run-all": "^4.1.5",
     "pkg": "^4.4.9",
+    "pkg-fetch": "^2.6.9",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
     "rimraf": "^3.0.2"
