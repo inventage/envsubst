@@ -58,16 +58,6 @@ jobs:
           asset_name: envsubst-${{ github.event.release.tag_name }}-alpine-x86_64
           asset_content_type: binary/octet-stream
 
-      - name: Upload Linux (FreeBSD) Binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/freebsd/envsubst
-          asset_name: envsubst-${{ github.event.release.tag_name }}-freebsd-x86_64
-          asset_content_type: binary/octet-stream
-
       - name: Upload MacOS Binary
         uses: actions/upload-release-asset@v1.0.2
         env:

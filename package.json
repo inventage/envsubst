@@ -24,7 +24,6 @@
     "dist": "npm run clean && run-p -l dist:*",
     "dist:linux": "pkg -t node14-linux-x64 --out-path dist/linux .",
     "dist:alpine": "pkg -t node14-alpine-x64 --out-path dist/alpine .",
-    "dist:freebsd": "pkg -t node14-freebsd-x64 --out-path dist/freebsd .",
     "dist:macos": "pkg -t node14-macos-x64 --out-path dist/macos .",
     "dist:win": "pkg -t node14-win-x64 --out-path dist/win ."
   },
