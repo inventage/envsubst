@@ -9,7 +9,7 @@ matchAll.shim();
  * @returns {string}
  */
 const regexPattern = (prefix = '') => {
-  return `\\\${(${prefix ? prefix : ''}\\w+)(:-(\\w+))?}`;
+  return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]+))?}`;
 };
 
 /**
