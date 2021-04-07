@@ -7,16 +7,30 @@ Environment variables substitution for Node
 
 ## Example
 
-Let's say you have a file `test` with the following content:
+Let's say you have a file `temp` with the following content:
 
 ```
 ${BAR}
 ${FOO:-foo}
 ```
 
-When you run `BAR=baz npx --ignore-existing @inventage/envsubst test`, you will end up with the following content in `test`:
+When you run `BAR=baz npx --ignore-existing @inventage/envsubst temp`, you will end up with the following content in `temp`:
 
 ```
 baz
 foo
+```
+
+and the following output:
+
+```
+Made 2 replacements:
+
+┌──────┬─────────────┬───────┐
+│ File │ Variable    │ Value │
+├──────┼─────────────┼───────┤
+│ temp │ ${BAR}      │ baz   │
+├──────┼─────────────┼───────┤
+│ temp │ ${FOO:-foo} │ foo   │
+└──────┴─────────────┴───────┘
 ```
