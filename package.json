@@ -34,9 +34,9 @@
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
-    "globby": "^11.0.2",
+    "globby": "^11.0.3",
     "meow": "^9.0.0",
-    "string.prototype.matchall": "^4.0.3"
+    "string.prototype.matchall": "^4.0.4"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
@@ -45,8 +45,8 @@
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
     "npm-run-all": "^4.1.5",
-    "pkg": "^4.4.9",
-    "pkg-fetch": "^2.6.9",
+    "pkg": "^4.5.1",
+    "pkg-fetch": "^2.6.10",
     "prettier": "^2.2.1",
     "pretty-quick": "^3.1.0",
     "rimraf": "^3.0.2"
