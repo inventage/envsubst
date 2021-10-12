@@ -8,7 +8,7 @@ matchAll.shim();
  * @param prefix
  * @returns {string}
  */
-const regexPattern = (prefix = '') => {
+const variableRegexPattern = (prefix = '') => {
   return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]+))?}`;
 };
 
@@ -23,7 +23,7 @@ const regexPattern = (prefix = '') => {
  */
 const replaceVars = (string, variables = {}, prefix = '') =>
   new Promise(resolve => {
-    const regex = new RegExp(regexPattern(prefix), 'gm');
+    const regex = new RegExp(variableRegexPattern(prefix), 'gm');
     const matches = [...string.matchAll(regex)];
 
     let replaced = string;
@@ -47,6 +47,6 @@ const replaceVars = (string, variables = {}, prefix = '') =>
   });
 
 module.exports = {
-  regexPattern,
+  variableRegexPattern,
   replaceVars,
 };

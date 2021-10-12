@@ -1,12 +1,12 @@
-const { regexPattern, replaceVars } = require('../src/utils');
+const { variableRegexPattern, replaceVars } = require('../src/utils');
 
 describe('dynamic regex pattern', () => {
   it('pattern without placeholder', () => {
-    expect(regexPattern()).toEqual('\\${(\\w+)(:-([^\\s}]+))?}');
+    expect(variableRegexPattern()).toEqual('\\${(\\w+)(:-([^\\s}]+))?}');
   });
 
   it('pattern with placeholder', () => {
-    expect(regexPattern('FOO_')).toEqual('\\${(FOO_\\w+)(:-([^\\s}]+))?}');
+    expect(variableRegexPattern('FOO_')).toEqual('\\${(FOO_\\w+)(:-([^\\s}]+))?}');
   });
 });
 
