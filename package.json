@@ -1,5 +1,6 @@
 {
   "name": "@inventage/envsubst",
+  "version": "0.5.0",
   "description": "Environment variables substitution for Node",
   "license": "MIT",
   "author": "Peter Siska <psiska@inventage.com>",
@@ -11,34 +12,34 @@
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "version": "0.5.0",
-  "main": "index.js",
+  "type": "module",
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
   "scripts": {
     "clean": "rimraf dist",
-    "format": "prettier '**/*.js' --write",
-    "lint": "prettier '**/*.js' --check",
-    "test": "jest",
     "dist": "npm run clean && npm run fetch && run-p -l dist:*",
-    "dist:linux": "pkg -t node16-linux-x64 --out-path dist/linux .",
     "dist:alpine": "pkg -t node16-alpine-x64 --out-path dist/alpine .",
+    "dist:linux": "pkg -t node16-linux-x64 --out-path dist/linux .",
     "dist:macos": "pkg -t node16-macos-x64 --out-path dist/macos .",
     "dist:win": "pkg -t node16-win-x64 --out-path dist/win .",
     "fetch": "run-p -l fetch:*",
-    "fetch:linux": "pkg-fetch -f -n node16 -p linux -a x64",
     "fetch:alpine": "pkg-fetch -f -n node16 -p alpine -a x64",
+    "fetch:linux": "pkg-fetch -f -n node16 -p linux -a x64",
     "fetch:macos": "pkg-fetch -f -n node16 -p macos -a x64",
-    "fetch:win": "pkg-fetch -f -n node16 -p win -a x64"
+    "fetch:win": "pkg-fetch -f -n node16 -p win -a x64",
+    "format": "prettier '**/*.js' --write",
+    "lint": "prettier '**/*.js' --check",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
-    "globby": "^11.0.3",
-    "meow": "^9.0.0",
+    "globby": "^12.0.2",
+    "meow": "^10.1.1",
     "string.prototype.matchall": "^4.0.6"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "fs-extra": "^10.0.0",
     "husky": "^5.0.9",
@@ -60,15 +61,20 @@
     "variables",
     "vars"
   ],
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "exports": "./index.js",
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
   },
   "jest": {
+    "transform": {},
     "testPathIgnorePatterns": [
       "<rootDir>/test/(__tmp|mocks)/"
     ]

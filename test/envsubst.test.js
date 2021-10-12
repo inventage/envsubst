@@ -1,10 +1,13 @@
-const { spawn } = require('child_process');
-const fs = require('fs');
-const fse = require('fs-extra');
-const rimraf = require('rimraf');
-const path = require('path');
-const pkg = require('../package.json');
-const dotenv = require('dotenv');
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import fse from 'fs-extra';
+import rimraf from 'rimraf';
+import path from 'path';
+import pkg from '../package.json';
+import dotenv from 'dotenv';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const REPO_DIR = path.resolve(__dirname, '..');
 const MOCKS_DIR = path.resolve(__dirname, 'mocks');

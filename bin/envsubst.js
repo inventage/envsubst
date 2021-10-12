@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-const meow = require('meow');
-const fs = require('fs');
-const globby = require('globby');
-const Table = require('cli-table3');
-const { replaceVars } = require('../src/utils');
+import meow from 'meow';
+import fs from 'fs';
+import { globby } from 'globby';
+import Table from 'cli-table3';
+import { replaceVars } from '../src/utils.js';
 
 const cli = meow(
   `
@@ -29,6 +29,7 @@ const cli = meow(
         alias: 'p',
       },
     },
+    importMeta: import.meta,
   }
 );
 

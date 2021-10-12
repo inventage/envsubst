@@ -1,4 +1,4 @@
-const { variableRegexPattern, replaceVars } = require('../src/utils');
+import { variableRegexPattern, replaceVars } from '../src/utils.js';
 
 describe('dynamic regex pattern', () => {
   it('pattern without placeholder', () => {

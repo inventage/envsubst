@@ -1,4 +1,4 @@
-const matchAll = require('string.prototype.matchall');
+import matchAll from 'string.prototype.matchall';
 matchAll.shim();
 
 /**
@@ -8,7 +8,7 @@ matchAll.shim();
  * @param prefix
  * @returns {string}
  */
-const variableRegexPattern = (prefix = '') => {
+export const variableRegexPattern = (prefix = '') => {
   return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]+))?}`;
 };
 
@@ -21,7 +21,7 @@ const variableRegexPattern = (prefix = '') => {
  * @param {string} prefix
  * @returns {Promise<string>}
  */
-const replaceVars = (string, variables = {}, prefix = '') =>
+export const replaceVars = (string, variables = {}, prefix = '') =>
   new Promise(resolve => {
     const regex = new RegExp(variableRegexPattern(prefix), 'gm');
     const matches = [...string.matchAll(regex)];
@@ -45,8 +45,3 @@ const replaceVars = (string, variables = {}, prefix = '') =>
 
     resolve([replaced, replacements]);
   });
-
-module.exports = {
-  variableRegexPattern,
-  replaceVars,
-};
