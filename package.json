@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "main": "index.js",
+  "main": "src/utils.js",
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
