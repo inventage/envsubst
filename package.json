@@ -1,6 +1,6 @@
 {
   "name": "@inventage/envsubst",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Environment variables substitution for Node",
   "license": "MIT",
   "author": "Peter Siska <psiska@inventage.com>",
