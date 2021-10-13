@@ -30,7 +30,8 @@
     "fetch:linux": "pkg-fetch -f -n node16 -p linux -a x64",
     "fetch:alpine": "pkg-fetch -f -n node16 -p alpine -a x64",
     "fetch:macos": "pkg-fetch -f -n node16 -p macos -a x64",
-    "fetch:win": "pkg-fetch -f -n node16 -p win -a x64"
+    "fetch:win": "pkg-fetch -f -n node16 -p win -a x64",
+    "prepare": "husky install"
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
@@ -41,7 +42,7 @@
   "devDependencies": {
     "dotenv": "^10.0.0",
     "fs-extra": "^10.0.0",
-    "husky": "^5.0.9",
+    "husky": "^7.0.0",
     "jest": "^27.2.5",
     "lint-staged": "^11.2.3",
     "npm-run-all": "^4.1.5",
@@ -62,11 +63,6 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   },
   "jest": {
     "testPathIgnorePatterns": [
