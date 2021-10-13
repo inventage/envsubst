@@ -2,11 +2,11 @@ const { variableRegexPattern, replaceVars } = require('../src/utils');
 
 describe('dynamic regex pattern', () => {
   it('pattern without placeholder', () => {
-    expect(variableRegexPattern()).toEqual('\\${(\\w+)(:-([^\\s}]+))?}');
+    expect(variableRegexPattern()).toEqual('\\${(\\w+)(:-([^\\s}]*))?}');
   });
 
   it('pattern with placeholder', () => {
-    expect(variableRegexPattern('FOO_')).toEqual('\\${(FOO_\\w+)(:-([^\\s}]+))?}');
+    expect(variableRegexPattern('FOO_')).toEqual('\\${(FOO_\\w+)(:-([^\\s}]*))?}');
   });
 });
 
@@ -30,11 +30,12 @@ describe('variable replacement', () => {
   });
 
   it('complex replacements', async () => {
-    let [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' });
-    expect(replaced).toEqual(`foo\nbar`);
+    let [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}\n\${BAZ:-}`, { VAR: 'foo' });
+    expect(replaced).toEqual(`foo\nbar\n`);
     expect(replacements).toEqual([
       { from: '${VAR}', to: 'foo', count: 1 },
       { from: '${FOO:-bar}', to: 'bar', count: 1 },
+      { from: '${BAZ:-}', to: '', count: 1 },
     ]);
 
     [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });

@@ -4,12 +4,12 @@ matchAll.shim();
 /**
  * Regex pattern with an optional prefix.
  *
- * @see https://regex101.com/r/xt0dVf/1
+ * @see https://regex101.com/r/M3dVAW/1
  * @param prefix
  * @returns {string}
  */
 const variableRegexPattern = (prefix = '') => {
-  return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]+))?}`;
+  return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]*))?}`;
 };
 
 /**
@@ -31,7 +31,7 @@ const replaceVars = (string, variables = {}, prefix = '') =>
     for (const match of matches) {
       const [original, name, , fallback] = match;
       const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
-      if (value) {
+      if (value !== undefined) {
         const replacement = replacements.find(r => r.from === original && r.to === value);
         if (replacement) {
           replacement.count = replacement.count + 1;
