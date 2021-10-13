@@ -1,5 +1,6 @@
 {
   "name": "@inventage/envsubst",
+  "version": "0.5.0",
   "description": "Environment variables substitution for Node",
   "license": "MIT",
   "author": "Peter Siska <psiska@inventage.com>",
@@ -11,27 +12,26 @@
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "version": "0.5.0",
   "main": "index.js",
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
   "scripts": {
     "clean": "rimraf dist",
-    "format": "prettier '**/*.js' --write",
-    "lint": "prettier '**/*.js' --check",
-    "test": "jest",
     "dist": "npm run clean && npm run fetch && run-p -l dist:*",
-    "dist:linux": "pkg -t node16-linux-x64 --out-path dist/linux .",
     "dist:alpine": "pkg -t node16-alpine-x64 --out-path dist/alpine .",
+    "dist:linux": "pkg -t node16-linux-x64 --out-path dist/linux .",
     "dist:macos": "pkg -t node16-macos-x64 --out-path dist/macos .",
     "dist:win": "pkg -t node16-win-x64 --out-path dist/win .",
     "fetch": "run-p -l fetch:*",
-    "fetch:linux": "pkg-fetch -f -n node16 -p linux -a x64",
     "fetch:alpine": "pkg-fetch -f -n node16 -p alpine -a x64",
+    "fetch:linux": "pkg-fetch -f -n node16 -p linux -a x64",
     "fetch:macos": "pkg-fetch -f -n node16 -p macos -a x64",
     "fetch:win": "pkg-fetch -f -n node16 -p win -a x64",
-    "prepare": "husky install"
+    "format": "prettier '**/*.js' --write",
+    "lint": "prettier '**/*.js' --check",
+    "prepare": "husky install",
+    "test": "jest"
   },
   "dependencies": {
     "cli-table3": "^0.6.0",
