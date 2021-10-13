@@ -16,6 +16,10 @@
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
+  "files": [
+    "bin",
+    "src"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "dist": "npm run clean && npm run fetch && run-p -l dist:*",
