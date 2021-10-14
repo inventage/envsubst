@@ -19,7 +19,7 @@ const variableRegexPattern = (prefix = '') => {
  * @param {string} string
  * @param {object} variables
  * @param {string} prefix
- * @returns {Promise<[string]>}
+ * @returns {Promise<unknown[]>}
  */
 const replaceVars = (string, variables = {}, prefix = '') =>
   new Promise(resolve => {
@@ -33,7 +33,7 @@ const replaceVars = (string, variables = {}, prefix = '') =>
  * @param {string} string
  * @param {object} variables
  * @param {string} prefix
- * @returns {[string]}
+ * @returns {unknown[]}
  */
 const replaceVarsSync = (string, variables = {}, prefix = '') => {
   const regex = new RegExp(variableRegexPattern(prefix), 'gm');
