@@ -18,7 +18,7 @@ fse.mkdirsSync(TEMP_DIR);
 fse.copySync(FIXTURES_DIR, TEMP_DIR);
 
 // Cleanup by removing the temporary directory after we're done
-test.after('cleanup', () => {
+test.after.always('cleanup', () => {
   rimraf.sync(TEMP_DIR);
 });
 
