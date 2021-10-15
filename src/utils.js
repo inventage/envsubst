@@ -1,6 +1,8 @@
 const matchAll = require('string.prototype.matchall');
 matchAll.shim();
 
+const escapeStringRegexp = require('escape-string-regexp');
+
 /**
  * Regex pattern with an optional prefix.
  *
@@ -9,7 +11,7 @@ matchAll.shim();
  * @returns {string}
  */
 const variableRegexPattern = (prefix = '') => {
-  return `\\\${(${prefix ? prefix : ''}\\w+)(:-([^\\s}]*))?}`;
+  return `\\\${(${prefix ? escapeStringRegexp(prefix) : ''}\\w+)(:-([^\\s}]*))?}`;
 };
 
 /**
