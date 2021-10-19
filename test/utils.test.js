@@ -124,3 +124,43 @@ test('complex replacements', async t => {
     { from: '${FOO:-bar}', to: 'baz', count: 1 },
   ]);
 });
+
+test('replacements with window[] trimming', async t => {
+  const testCases = [
+    ['window["{VAR}"]', { VAR: 'foo' }, 'window["{VAR}"]', []],
+    ['window["${VAR_FOO}"]', { VAR: 'foo' }, 'window["${VAR_FOO}"]', []],
+    ['window["$VAR"]', { VAR: 'foo' }, 'window["$VAR"]', []],
+    ['window["${VAR:-bla}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-bla}"]', to: 'foo', count: 1 }]],
+    ['window["${VAR:-bla}"]; window["${BAZ}"]', { VAR: 'foo' }, 'foo; window["${BAZ}"]', [{ from: 'window["${VAR:-bla}"]', to: 'foo', count: 1 }]],
+    ['window["${VAR:-bla}"]', { FOO: 'bar' }, 'bla', [{ from: 'window["${VAR:-bla}"]', to: 'bla', count: 1 }]],
+    ['window["${VAR:-}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-}"]', to: 'foo', count: 1 }]],
+    ['window["${VAR:-}"]', { FOO: 'bar' }, '', [{ from: 'window["${VAR:-}"]', to: '', count: 1 }]],
+    ['window["${VAR:-bla?}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-bla?}"]', to: 'foo', count: 1 }]],
+    ['window["${VAR:-bla?}"]', { FOO: 'bar' }, 'bla?', [{ from: 'window["${VAR:-bla?}"]', to: 'bla?', count: 1 }]],
+    ['window["${VAR:bla}"]', { VAR: 'foo' }, 'window["${VAR:bla}"]', []],
+
+    // Some test cases with single quotes…
+    // prettier-ignore
+    ['window[\'{VAR}\']', { VAR: 'foo' }, 'window[\'{VAR}\']', []],
+    // prettier-ignore
+    ['window[\'${VAR_FOO}\']', { VAR: 'foo' }, 'window[\'${VAR_FOO}\']', []],
+    // prettier-ignore
+    ['window[\'$VAR\']', { VAR: 'foo' }, 'window[\'$VAR\']', []],
+    // prettier-ignore
+    ['window[\'${VAR:-bla}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-bla}\']', to: 'foo', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${VAR:-}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-}\']', to: 'foo', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${VAR:-bla?}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-bla?}\']', to: 'foo', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${VAR:bla}\']', { VAR: 'foo' }, 'window[\'${VAR:bla}\']', []],
+  ];
+
+  t.plan(testCases.length * 2);
+
+  for (const [input, vars, output, replacementsShould] of testCases) {
+    const [replaced, replacements] = await replaceVars(input, vars, '', true);
+    t.is(replaced, output, `Failed replacing variables for ${input}`);
+    t.deepEqual(replacements, replacementsShould);
+  }
+});

@@ -15,17 +15,31 @@ const variableRegexPattern = (prefix = '') => {
 };
 
 /**
+ * Regex pattern that wraps the variable regex pattern with a window variable statement:
+ *
+ *     window['${VAR}'] or window["${VAR}"]
+ *
+ * @see https://regex101.com/r/ND057d/1
+ * @param prefix
+ * @returns {string}
+ */
+const windowVariableRegexPattern = (prefix = '') => {
+  return `(window\\[['"]{1})?${variableRegexPattern(prefix)}(['"]{1}\\])?`;
+};
+
+/**
  * Replaces all variable placeholders in the given string with either variable values
  * found in the variables parameter OR with the given default in the variable string.
  *
  * @param {string} string
  * @param {object} variables
  * @param {string} prefix
+ * @param {boolean} trimWindow
  * @returns {Promise<unknown[]>}
  */
-const replaceVars = (string, variables = {}, prefix = '') =>
+const replaceVars = (string, variables = {}, prefix = '', trimWindow = false) =>
   new Promise(resolve => {
-    resolve(replaceVarsSync(string, variables, prefix));
+    resolve(replaceVarsSync(string, variables, prefix, trimWindow));
   });
 
 /**
@@ -35,26 +49,45 @@ const replaceVars = (string, variables = {}, prefix = '') =>
  * @param {string} string
  * @param {object} variables
  * @param {string} prefix
+ * @param {boolean} trimWindow
  * @returns {unknown[]}
  */
-const replaceVarsSync = (string, variables = {}, prefix = '') => {
-  const regex = new RegExp(variableRegexPattern(prefix), 'gm');
+const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false) => {
+  const regex = new RegExp(trimWindow ? windowVariableRegexPattern(prefix) : variableRegexPattern(prefix), 'gm');
   const matches = [...string.matchAll(regex)];
 
   let replaced = string;
   const replacements = [];
   for (const match of matches) {
-    const [original, name, , fallback] = match;
-    const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
-    if (value !== undefined) {
-      const replacement = replacements.find(r => r.from === original && r.to === value);
-      if (replacement) {
-        replacement.count = replacement.count + 1;
-      } else {
-        replacements.push({ from: original, to: value, count: 1 });
-      }
+    if (trimWindow) {
+      const [original, windowStart, name, , fallback, windowEnd] = match;
 
-      replaced = replaced.split(original).join(value);
+      const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      if (value !== undefined) {
+        const replacement = replacements.find(r => r.from === original && r.to === value);
+        if (replacement) {
+          replacement.count = replacement.count + 1;
+        } else {
+          replacements.push({ from: original, to: value, count: 1 });
+        }
+
+        const withoutWindow = original.replace(windowStart, '').replace(windowEnd, '');
+        replaced = replaced.split(original).join(withoutWindow.split(withoutWindow).join(value));
+      }
+    } else {
+      const [original, name, , fallback] = match;
+
+      const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      if (value !== undefined) {
+        const replacement = replacements.find(r => r.from === original && r.to === value);
+        if (replacement) {
+          replacement.count = replacement.count + 1;
+        } else {
+          replacements.push({ from: original, to: value, count: 1 });
+        }
+
+        replaced = replaced.split(original).join(value);
+      }
     }
   }
 

@@ -13,6 +13,7 @@ const cli = meow(
   Options
     --dry-run, -d  Do not edit any files
     --prefix, -p   Only replace variable names with the given prefix
+    --window, -w   Replace variables using the window syntax window["\${VAR}"]
 
   Examples
     $ envsubst 'dist/**/*.js'
@@ -23,10 +24,17 @@ const cli = meow(
       dryRun: {
         type: 'boolean',
         alias: 'd',
+        default: false,
       },
       prefix: {
         type: 'string',
         alias: 'p',
+        default: '',
+      },
+      window: {
+        type: 'boolean',
+        alias: 'w',
+        default: false,
       },
     },
   }
@@ -39,7 +47,7 @@ const cli = meow(
 
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix);
+    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix, cli.flags.window);
 
     replacementsMade.forEach(r =>
       replacements.push({

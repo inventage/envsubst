@@ -45,9 +45,16 @@ const fixturesDir = fs
 
 fixturesDir.forEach(fixtureDir => {
   const fixtureBasename = path.basename(fixtureDir);
-  const given = path.resolve(fixtureDir, `${fixtureBasename}`);
-  const envFile = path.resolve(fixtureDir, `${fixtureBasename}.env`);
-  const expected = path.resolve(fixtureDir, `${fixtureBasename}_expected`);
+  const useWindowSyntaxParam = fixtureBasename.indexOf('_w') !== -1;
+
+  let fixtureBasenameWithoutSuffix = fixtureBasename;
+  if (useWindowSyntaxParam) {
+    fixtureBasenameWithoutSuffix = fixtureBasename.replace('_w', '');
+  }
+
+  const given = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}`);
+  const envFile = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}.env`);
+  const expected = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}_expected`);
 
   test(`all fixture files exists in fixture directory "${fixtureBasename}"`, t => {
     t.assert(fs.existsSync(given));
@@ -55,10 +62,14 @@ fixturesDir.forEach(fixtureDir => {
     t.assert(fs.existsSync(expected));
   });
 
+  const params = [given];
+  if (useWindowSyntaxParam) {
+    params.unshift('--window');
+  }
+
   test(`replaces variables in fixture "${fixtureBasename}"`, async t => {
-    dotenv.config({ path: envFile });
-    await execa(CLI_FILE, [given], {
-      env: process.env,
+    await execa(CLI_FILE, params, {
+      env: dotenv.parse(fs.readFileSync(envFile, 'utf-8')),
     });
 
     t.is(fs.readFileSync(given, 'utf8'), fs.readFileSync(expected, 'utf8'));
