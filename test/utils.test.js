@@ -130,13 +130,13 @@ test('replacements with window[] trimming', async t => {
     ['window["{VAR}"]', { VAR: 'foo' }, 'window["{VAR}"]', []],
     ['window["${VAR_FOO}"]', { VAR: 'foo' }, 'window["${VAR_FOO}"]', []],
     ['window["$VAR"]', { VAR: 'foo' }, 'window["$VAR"]', []],
-    ['window["${VAR:-bla}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-bla}"]', to: 'foo', count: 1 }]],
-    ['window["${VAR:-bla}"]; window["${BAZ}"]', { VAR: 'foo' }, 'foo; window["${BAZ}"]', [{ from: 'window["${VAR:-bla}"]', to: 'foo', count: 1 }]],
-    ['window["${VAR:-bla}"]', { FOO: 'bar' }, 'bla', [{ from: 'window["${VAR:-bla}"]', to: 'bla', count: 1 }]],
-    ['window["${VAR:-}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-}"]', to: 'foo', count: 1 }]],
-    ['window["${VAR:-}"]', { FOO: 'bar' }, '', [{ from: 'window["${VAR:-}"]', to: '', count: 1 }]],
-    ['window["${VAR:-bla?}"]', { VAR: 'foo' }, 'foo', [{ from: 'window["${VAR:-bla?}"]', to: 'foo', count: 1 }]],
-    ['window["${VAR:-bla?}"]', { FOO: 'bar' }, 'bla?', [{ from: 'window["${VAR:-bla?}"]', to: 'bla?', count: 1 }]],
+    ['window["${VAR:-bla}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${VAR:-bla}"]', to: '"foo"', count: 1 }]],
+    ['window["${VAR:-bla}"]; window["${BAZ}"]', { VAR: 'foo' }, '"foo"; window["${BAZ}"]', [{ from: 'window["${VAR:-bla}"]', to: '"foo"', count: 1 }]],
+    ['window["${VAR:-bla}"]', { FOO: 'bar' }, '"bla"', [{ from: 'window["${VAR:-bla}"]', to: '"bla"', count: 1 }]],
+    ['window["${VAR:-}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${VAR:-}"]', to: '"foo"', count: 1 }]],
+    ['window["${VAR:-}"]', { FOO: 'bar' }, '""', [{ from: 'window["${VAR:-}"]', to: '""', count: 1 }]],
+    ['window["${VAR:-bla?}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${VAR:-bla?}"]', to: '"foo"', count: 1 }]],
+    ['window["${VAR:-bla?}"]', { FOO: 'bar' }, '"bla?"', [{ from: 'window["${VAR:-bla?}"]', to: '"bla?"', count: 1 }]],
     ['window["${VAR:bla}"]', { VAR: 'foo' }, 'window["${VAR:bla}"]', []],
 
     // Some test cases with single quotes…
@@ -147,11 +147,11 @@ test('replacements with window[] trimming', async t => {
     // prettier-ignore
     ['window[\'$VAR\']', { VAR: 'foo' }, 'window[\'$VAR\']', []],
     // prettier-ignore
-    ['window[\'${VAR:-bla}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-bla}\']', to: 'foo', count: 1 }]],
+    ['window[\'${VAR:-bla}\']', { VAR: 'foo' }, '\'foo\'', [{ from: 'window[\'${VAR:-bla}\']', to: '\'foo\'', count: 1 }]],
     // prettier-ignore
-    ['window[\'${VAR:-}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-}\']', to: 'foo', count: 1 }]],
+    ['window[\'${VAR:-}\']', { VAR: 'foo' }, '\'foo\'', [{ from: 'window[\'${VAR:-}\']', to: '\'foo\'', count: 1 }]],
     // prettier-ignore
-    ['window[\'${VAR:-bla?}\']', { VAR: 'foo' }, 'foo', [{ from: 'window[\'${VAR:-bla?}\']', to: 'foo', count: 1 }]],
+    ['window[\'${VAR:-bla?}\']', { VAR: 'foo' }, '\'foo\'', [{ from: 'window[\'${VAR:-bla?}\']', to: '\'foo\'', count: 1 }]],
     // prettier-ignore
     ['window[\'${VAR:bla}\']', { VAR: 'foo' }, 'window[\'${VAR:bla}\']', []],
   ];

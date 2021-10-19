@@ -61,18 +61,21 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
   for (const match of matches) {
     if (trimWindow) {
       const [original, windowStart, name, , fallback, windowEnd] = match;
+      const windowStartBrace = windowStart.replace('window[', '');
+      const windowEndBrace = windowEnd.replace(']', '');
+      const withoutWindow = original.replace(windowStart, '').replace(windowEnd, '');
 
       const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
       if (value !== undefined) {
-        const replacement = replacements.find(r => r.from === original && r.to === value);
+        const wrappedValue = `${windowStartBrace}${value}${windowEndBrace}`;
+        const replacement = replacements.find(r => r.from === original && r.to === wrappedValue);
         if (replacement) {
           replacement.count = replacement.count + 1;
         } else {
-          replacements.push({ from: original, to: value, count: 1 });
+          replacements.push({ from: original, to: wrappedValue, count: 1 });
         }
 
-        const withoutWindow = original.replace(windowStart, '').replace(windowEnd, '');
-        replaced = replaced.split(original).join(withoutWindow.split(withoutWindow).join(value));
+        replaced = replaced.split(original).join(withoutWindow.split(withoutWindow).join(wrappedValue));
       }
     } else {
       const [original, name, , fallback] = match;
