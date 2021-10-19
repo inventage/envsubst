@@ -1,0 +1,16 @@
+{
+  "ignore": {
+    "escape-string-regexp": {
+      "versions": ">=5",
+      "reason": "ESM only"
+    },
+    "globby": {
+      "versions": ">=12",
+      "reason": "ESM only"
+    },
+    "meow": {
+      "versions": ">=10",
+      "reason": "ESM only"
+    }
+  }
+}
