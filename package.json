@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "dist": "npm run clean && npm run fetch && run-p -l dist:*",
+    "dist": "npm run clean && npm run fetch && run-s -l dist:*",
     "dist:alpine": "pkg -t node16-alpine-x64 --out-path dist/alpine .",
     "dist:linux": "pkg -t node16-linux-x64 --out-path dist/linux .",
     "dist:macos": "pkg -t node16-macos-x64 --out-path dist/macos .",
