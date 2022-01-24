@@ -11,6 +11,10 @@
     "meow": {
       "versions": ">=10",
       "reason": "ESM only"
+    },
+    "execa": {
+      "versions": ">=6",
+      "reason": "ESM only"
     }
   }
 }
