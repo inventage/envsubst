@@ -3,10 +3,10 @@
 
 name: Main Workflow
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
-  # Run codestyle checks
+  # Run code-style checks
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 10.x, 12.x, 14.x, 16.x ]
+        node: [12.x, 14.x, 16.x., 17.x]
     name: Test Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
 
   # Test building binaries
   binaries:
-    needs: [ lint, test ]
+    needs: [lint, test]
     name: Binaries (build)
     runs-on: ubuntu-latest
     steps:
