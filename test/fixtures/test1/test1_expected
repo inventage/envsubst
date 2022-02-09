@@ -1,3 +1,4 @@
 ${BAR}
 foo
+one,two,three
 ${BAZ}

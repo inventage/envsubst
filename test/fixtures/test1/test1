@@ -1,3 +1,4 @@
 ${BAR}
 ${FOO:-foo}
+${BLA:-one,two,three}
 ${BAZ}
