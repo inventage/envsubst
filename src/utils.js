@@ -61,6 +61,12 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
   for (const match of matches) {
     if (trimWindow) {
       const [original, windowStart, name, , fallback, windowEnd] = match;
+
+      // Bail if the match does not contain `^window[`
+      if (!windowStart) {
+        continue;
+      }
+
       const valueStartQuote = windowStart.replace('window[', '');
       const valueEndQuote = windowEnd.replace(']', '');
       const withoutWindow = original.replace(windowStart, '').replace(windowEnd, '');

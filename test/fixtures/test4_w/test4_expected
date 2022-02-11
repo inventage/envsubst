@@ -1,3 +1,4 @@
+${BAR}
 "bla"
 'foo'
 window['${BAZ}']

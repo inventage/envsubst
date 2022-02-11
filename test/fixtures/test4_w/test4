@@ -1,3 +1,4 @@
+${BAR}
 window["${BAR}"]
 window['${FOO:-foo}']
 window['${BAZ}']
