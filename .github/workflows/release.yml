@@ -32,16 +32,6 @@ jobs:
           asset_name: envsubst-${{ github.event.release.tag_name }}-linux-x86_64
           asset_content_type: binary/octet-stream
 
-      - name: Upload Linux (arm64) Binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/linux-arm64/envsubst
-          asset_name: envsubst-${{ github.event.release.tag_name }}-linux-aarch64
-          asset_content_type: binary/octet-stream
-
       - name: Upload Linux (Alpine) Binary
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -52,16 +42,6 @@ jobs:
           asset_name: envsubst-${{ github.event.release.tag_name }}-alpine-x86_64
           asset_content_type: binary/octet-stream
 
-      - name: Upload Linux (Alpine, arm64) Binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/alpine-arm64/envsubst
-          asset_name: envsubst-${{ github.event.release.tag_name }}-alpine-aarch64
-          asset_content_type: binary/octet-stream
-
       - name: Upload MacOS Binary
         uses: actions/upload-release-asset@v1.0.2
         env:
@@ -70,16 +50,6 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./dist/macos/envsubst
           asset_name: envsubst-${{ github.event.release.tag_name }}-macos-x86_64
-          asset_content_type: binary/octet-stream
-
-      - name: Upload MacOS (arm64) Binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/macos-arm64/envsubst
-          asset_name: envsubst-${{ github.event.release.tag_name }}-macos-arm64
           asset_content_type: binary/octet-stream
 
       - name: Upload Windows Binary
