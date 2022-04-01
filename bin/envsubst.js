@@ -11,9 +11,10 @@ const cli = meow(
     $ envsubst <glob>
     
   Options
-    --dry-run, -d  Do not edit any files
-    --prefix, -p   Only replace variable names with the given prefix
-    --window, -w   Replace variables using the window syntax window["\${VAR}"]
+    --dry-run, -d       Do not edit any files
+    --prefix, -p        Only replace variable names with the given prefix
+    --ignore-case, -i   Ignore case when replacing variables
+    --window, -w        Replace variables using the window syntax window["\${VAR}"]
 
   Examples
     $ envsubst 'dist/**/*.js'
@@ -36,6 +37,11 @@ const cli = meow(
         alias: 'w',
         default: false,
       },
+      ignoreCase: {
+        type: 'boolean',
+        alias: 'i',
+        default: false,
+      },
     },
   }
 );
@@ -47,7 +53,7 @@ const cli = meow(
 
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf-8');
-    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix, cli.flags.window);
+    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix, cli.flags.window, cli.flags.ignoreCase);
 
     replacementsMade.forEach(r =>
       replacements.push({

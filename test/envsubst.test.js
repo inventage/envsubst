@@ -46,10 +46,15 @@ const fixturesDir = fs
 fixturesDir.forEach(fixtureDir => {
   const fixtureBasename = path.basename(fixtureDir);
   const useWindowSyntaxParam = fixtureBasename.indexOf('_w') !== -1;
+  const useIgnoreCaseParam = fixtureBasename.indexOf('_i') !== -1;
 
   let fixtureBasenameWithoutSuffix = fixtureBasename;
   if (useWindowSyntaxParam) {
     fixtureBasenameWithoutSuffix = fixtureBasename.replace('_w', '');
+  }
+
+  if (useIgnoreCaseParam) {
+    fixtureBasenameWithoutSuffix = fixtureBasename.replace('_i', '');
   }
 
   const given = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}`);
@@ -65,6 +70,10 @@ fixturesDir.forEach(fixtureDir => {
   const params = [given];
   if (useWindowSyntaxParam) {
     params.unshift('--window');
+  }
+
+  if (useIgnoreCaseParam) {
+    params.unshift('--ignore-case');
   }
 
   test(`replaces variables in fixture "${fixtureBasename}"`, async t => {

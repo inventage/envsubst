@@ -3,6 +3,13 @@ matchAll.shim();
 
 const escapeStringRegexp = require('escape-string-regexp');
 
+const toLowerKeys = obj => {
+  return Object.keys(obj).reduce((accumulator, key) => {
+    accumulator[key.toLowerCase()] = obj[key];
+    return accumulator;
+  }, {});
+};
+
 /**
  * Regex pattern with an optional prefix.
  *
@@ -35,11 +42,12 @@ const windowVariableRegexPattern = (prefix = '') => {
  * @param {object} variables
  * @param {string} prefix
  * @param {boolean} trimWindow
+ * @param {boolean} ignoreCase
  * @returns {Promise<unknown[]>}
  */
-const replaceVars = (string, variables = {}, prefix = '', trimWindow = false) =>
+const replaceVars = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) =>
   new Promise(resolve => {
-    resolve(replaceVarsSync(string, variables, prefix, trimWindow));
+    resolve(replaceVarsSync(string, variables, prefix, trimWindow, ignoreCase));
   });
 
 /**
@@ -50,17 +58,25 @@ const replaceVars = (string, variables = {}, prefix = '', trimWindow = false) =>
  * @param {object} variables
  * @param {string} prefix
  * @param {boolean} trimWindow
+ * @param {boolean} ignoreCase
  * @returns {unknown[]}
  */
-const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false) => {
-  const regex = new RegExp(trimWindow ? windowVariableRegexPattern(prefix) : variableRegexPattern(prefix), 'gm');
+const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) => {
+  const regex = new RegExp(trimWindow ? windowVariableRegexPattern(prefix) : variableRegexPattern(prefix), ignoreCase ? 'gmi' : 'gm');
   const matches = [...string.matchAll(regex)];
+  const lowercaseVariables = toLowerKeys(variables);
 
   let replaced = string;
   const replacements = [];
   for (const match of matches) {
     if (trimWindow) {
       const [original, windowStart, name, , fallback, windowEnd] = match;
+
+      // console.log('original', original);
+      // console.log('windowStart', windowStart);
+      // console.log('name', name);
+      // console.log('fallback', fallback);
+      // console.log('windowEnd', windowEnd);
 
       // Bail if the match does not contain `^window[`
       if (!windowStart) {
@@ -71,9 +87,20 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
       const valueEndQuote = windowEnd.replace(']', '');
       const withoutWindow = original.replace(windowStart, '').replace(windowEnd, '');
 
-      const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      let value;
+      if (ignoreCase) {
+        value = Object.hasOwnProperty.call(lowercaseVariables || {}, name.toLowerCase()) ? lowercaseVariables[name.toLowerCase()] : fallback;
+      } else {
+        value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      }
+
+      // console.log('value', value);
+
       if (value !== undefined) {
         const quotedValue = `${valueStartQuote}${value}${valueEndQuote}`;
+
+        // console.log('quotedValue', quotedValue);
+
         const replacement = replacements.find(r => r.from === original && r.to === quotedValue);
         if (replacement) {
           replacement.count = replacement.count + 1;
@@ -86,7 +113,13 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
     } else {
       const [original, name, , fallback] = match;
 
-      const value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      let value;
+      if (ignoreCase) {
+        value = Object.hasOwnProperty.call(lowercaseVariables || {}, name.toLowerCase()) ? lowercaseVariables[name.toLowerCase()] : fallback;
+      } else {
+        value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
+      }
+
       if (value !== undefined) {
         const replacement = replacements.find(r => r.from === original && r.to === value);
         if (replacement) {

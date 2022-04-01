@@ -27,6 +27,30 @@ test('simple replacements ', async t => {
   t.deepEqual(replacements, []);
 });
 
+test('simple replacements (case insensitive)', async t => {
+  [replaced, replacements] = await replaceVars('${var}', { VAR: 'foo' }, '', false, true);
+  t.is(replaced, 'foo');
+  t.deepEqual(replacements, [{ from: '${var}', to: 'foo', count: 1 }]);
+
+  [replaced, replacements] = await replaceVars('${VAR}', { var: 'foo' }, '', false, true);
+  t.is(replaced, 'foo');
+  t.deepEqual(replacements, [{ from: '${VAR}', to: 'foo', count: 1 }]);
+
+  [replaced, replacements] = await replaceVars('${var}${VAR}', { VAR: 'foo' }, '', false, true);
+  t.is(replaced, 'foofoo');
+  t.deepEqual(replacements, [
+    { from: '${var}', to: 'foo', count: 1 },
+    { from: '${VAR}', to: 'foo', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars('${var}${VAR}', { var: 'foo' }, '', false, true);
+  t.is(replaced, 'foofoo');
+  t.deepEqual(replacements, [
+    { from: '${var}', to: 'foo', count: 1 },
+    { from: '${VAR}', to: 'foo', count: 1 },
+  ]);
+});
+
 test('prefix replacements', async t => {
   let [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO:-bar}`, { VAR: 'foo' }, 'FOO_');
   t.is(replaced, `\${VAR}\n\${FOO:-bar}`);
@@ -37,6 +61,20 @@ test('prefix replacements', async t => {
   t.deepEqual(replacements, []);
 
   [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', FOO_2: 'baz' }, 'FOO_');
+  t.is(replaced, `\${VAR}\nbaz`);
+  t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
+});
+
+test('prefix replacements (case insensitive)', async t => {
+  [replaced, replacements] = await replaceVars(`\${VAR}\n\${foo_2:-bar}`, { VAR: 'foo', foO_2: 'baz' }, 'FOO_', false, true);
+  t.is(replaced, `\${VAR}\nbaz`);
+  t.deepEqual(replacements, [{ from: '${foo_2:-bar}', to: 'baz', count: 1 }]);
+
+  [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', foO_2: 'baz' }, 'foo_', false, true);
+  t.is(replaced, `\${VAR}\nbaz`);
+  t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
+
+  [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', foo_2: 'baz' }, 'FOO_', false, true);
   t.is(replaced, `\${VAR}\nbaz`);
   t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
 });
@@ -125,6 +163,58 @@ test('complex replacements', async t => {
   ]);
 });
 
+test('complex replacements (case insensitive)', async t => {
+  let [replaced, replacements] = await replaceVars(`\${VAR}\n\${foo:-bar}\n\${BAZ:-}`, { var: 'foo' }, '', false, true);
+  t.is(replaced, `foo\nbar\n`);
+  t.deepEqual(replacements, [
+    { from: '${VAR}', to: 'foo', count: 1 },
+    { from: '${foo:-bar}', to: 'bar', count: 1 },
+    { from: '${BAZ:-}', to: '', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars(`\${vAr}\n\${foo:-bar}`, { VAR: 'foo', Foo: 'baz' }, '', false, true);
+  t.is(replaced, `foo\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${vAr}', to: 'foo', count: 1 },
+    { from: '${foo:-bar}', to: 'baz', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars(`\${var}\n\${FOO:-bar}\${foo:-bar}\${FOO}\${foo}`, { VAR: 'foo', FOO: 'baz' }, '', false, true);
+  t.is(replaced, `foo\nbazbazbazbaz`);
+  t.deepEqual(replacements, [
+    { from: '${var}', to: 'foo', count: 1 },
+    { from: '${FOO:-bar}', to: 'baz', count: 1 },
+    { from: '${foo:-bar}', to: 'baz', count: 1 },
+    { from: '${FOO}', to: 'baz', count: 1 },
+    { from: '${foo}', to: 'baz', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars(`\${VAR:-yes?}\n\${foo:-bar}`, { var: 'foo', FOO: 'baz' }, '', false, true);
+  t.is(replaced, `foo\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${VAR:-yes?}', to: 'foo', count: 1 },
+    { from: '${foo:-bar}', to: 'baz', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars(`\${var:-yes? }\n\${foo:-bar}`, { VAR: 'foo', FOO: 'baz' }, '', false, true);
+  t.is(replaced, `\${var:-yes? }\nbaz`);
+  t.deepEqual(replacements, [{ from: '${foo:-bar}', to: 'baz', count: 1 }]);
+
+  [replaced, replacements] = await replaceVars(`\${Var:-yes}\n\${fOO:-bar}`, { var: 'foo', foo: 'baz' }, '', false, true);
+  t.is(replaced, `foo\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${Var:-yes}', to: 'foo', count: 1 },
+    { from: '${fOO:-bar}', to: 'baz', count: 1 },
+  ]);
+
+  [replaced, replacements] = await replaceVars(`\${var:-yes}\n\${fOO:-bar}`, { FOO: 'baz' }, '', false, true);
+  t.is(replaced, `yes\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${var:-yes}', to: 'yes', count: 1 },
+    { from: '${fOO:-bar}', to: 'baz', count: 1 },
+  ]);
+});
+
 test('replacements with window[] trimming', async t => {
   const testCases = [
     ['window["{VAR}"]', { VAR: 'foo' }, 'window["{VAR}"]', []],
@@ -160,6 +250,43 @@ test('replacements with window[] trimming', async t => {
 
   for (const [input, vars, output, replacementsShould] of testCases) {
     const [replaced, replacements] = await replaceVars(input, vars, '', true);
+    t.is(replaced, output, `Failed replacing variables for ${input}`);
+    t.deepEqual(replacements, replacementsShould);
+  }
+});
+
+test.only('replacements with window[] trimming (case insensitive)', async t => {
+  const testCases = [
+    ['window["${var:-bla}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${var:-bla}"]', to: '"foo"', count: 1 }]],
+    ['window["${VAR:-bla}"]; window["${BAZ}"]', { var: 'foo' }, '"foo"; window["${BAZ}"]', [{ from: 'window["${VAR:-bla}"]', to: '"foo"', count: 1 }]],
+    ['window["${var:-bla}"]', { FOO: 'bar' }, '"bla"', [{ from: 'window["${var:-bla}"]', to: '"bla"', count: 1 }]],
+    ['window["${var:-}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${var:-}"]', to: '"foo"', count: 1 }]],
+    ['window["${var:-}"]', { FOO: 'bar' }, '""', [{ from: 'window["${var:-}"]', to: '""', count: 1 }]],
+    ['window["${vAr:-bla?}"]', { VaR: 'foo' }, '"foo"', [{ from: 'window["${vAr:-bla?}"]', to: '"foo"', count: 1 }]],
+    ['window["${var:-bla?}"]', { FOO: 'bar' }, '"bla?"', [{ from: 'window["${var:-bla?}"]', to: '"bla?"', count: 1 }]],
+    ['window["${vaR:bla}"]', { Var: 'foo' }, 'window["${vaR:bla}"]', []],
+
+    // Some test cases with single quotes…
+    // prettier-ignore
+    ['window[\'{var}\']', { VAR: 'foo' }, 'window[\'{var}\']', []],
+    // prettier-ignore
+    ['window[\'${var_FOO}\']', { VAR: 'foo' }, 'window[\'${var_FOO}\']', []],
+    // prettier-ignore
+    ['window[\'$var\']', { VAR: 'foo' }, 'window[\'$var\']', []],
+    // prettier-ignore
+    ['window[\'${vAr:-bla}\']', { VAR: 'foo' }, '\'foo\'', [{ from: 'window[\'${vAr:-bla}\']', to: '\'foo\'', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${VAR:-}\']', { var: 'foo' }, '\'foo\'', [{ from: 'window[\'${VAR:-}\']', to: '\'foo\'', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${var:-bla?}\']', { VAR: 'foo' }, '\'foo\'', [{ from: 'window[\'${var:-bla?}\']', to: '\'foo\'', count: 1 }]],
+    // prettier-ignore
+    ['window[\'${VAR:bla}\']', { var: 'foo' }, 'window[\'${VAR:bla}\']', []],
+  ];
+
+  t.plan(testCases.length * 2);
+
+  for (const [input, vars, output, replacementsShould] of testCases) {
+    const [replaced, replacements] = await replaceVars(input, vars, '', true, true);
     t.is(replaced, output, `Failed replacing variables for ${input}`);
     t.deepEqual(replacements, replacementsShould);
   }
