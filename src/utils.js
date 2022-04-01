@@ -72,12 +72,6 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
     if (trimWindow) {
       const [original, windowStart, name, , fallback, windowEnd] = match;
 
-      // console.log('original', original);
-      // console.log('windowStart', windowStart);
-      // console.log('name', name);
-      // console.log('fallback', fallback);
-      // console.log('windowEnd', windowEnd);
-
       // Bail if the match does not contain `^window[`
       if (!windowStart) {
         continue;
@@ -94,13 +88,8 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
         value = Object.hasOwnProperty.call(variables || {}, name) ? variables[name] : fallback;
       }
 
-      // console.log('value', value);
-
       if (value !== undefined) {
         const quotedValue = `${valueStartQuote}${value}${valueEndQuote}`;
-
-        // console.log('quotedValue', quotedValue);
-
         const replacement = replacements.find(r => r.from === original && r.to === quotedValue);
         if (replacement) {
           replacement.count = replacement.count + 1;
