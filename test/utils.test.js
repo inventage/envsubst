@@ -14,12 +14,12 @@ test('simple replacements ', async t => {
   t.is(replaced, '${VAR}');
   t.deepEqual(replacements, []);
 
-  [replaced, replacements] = await replaceVars('${VAR}', { VAR: 'foo' });
-  t.is(replaced, 'foo');
+  [replaced, replacements] = await replaceVars('${VAR}${var}', { VAR: 'foo' });
+  t.is(replaced, 'foo${var}');
   t.deepEqual(replacements, [{ from: '${VAR}', to: 'foo', count: 1 }]);
 
-  [replaced, replacements] = await replaceVars('${VAR}${VAR}', { VAR: 'foo' });
-  t.is(replaced, 'foofoo');
+  [replaced, replacements] = await replaceVars('${VAR}${VAR}${var}', { VAR: 'foo' });
+  t.is(replaced, 'foofoo${var}');
   t.deepEqual(replacements, [{ from: '${VAR}', to: 'foo', count: 2 }]);
 
   [replaced, replacements] = await replaceVars('${VAR?}', { VAR: 'foo' });
