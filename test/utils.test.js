@@ -74,9 +74,9 @@ test('prefix replacements (case insensitive)', async t => {
   t.is(replaced, `\${VAR}\nbaz`);
   t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
 
-  [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', foo_2: 'baz' }, 'FOO_', false, true);
+  [replaced, replacements] = await replaceVars(`\${VAR}\n\${foo_2:-bar}`, { VAR: 'foo', Foo_2: 'baz' }, 'FOO_', false, true);
   t.is(replaced, `\${VAR}\nbaz`);
-  t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
+  t.deepEqual(replacements, [{ from: '${foo_2:-bar}', to: 'baz', count: 1 }]);
 });
 
 test('empty variable after prefix', async t => {
