@@ -10,56 +10,56 @@ on:
   pull_request:
 
 jobs:
-  #  # Run code-style checks
-  #  lint:
-  #    name: Lint
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v3
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: '18'
-  #
-  #      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
-  #      - uses: actions/cache@v3
-  #        id: cache-node-modules
-  #        with:
-  #          path: ./node_modules
-  #          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
-  #
-  #      - name: Install packages
-  #        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-  #        run: npm ci
-  #
-  #      - name: Run Linters
-  #        run: npm run lint
-  #
-  #  # Run tests
-  #  test:
-  #    runs-on: ubuntu-latest
-  #    strategy:
-  #      matrix:
-  #        node: ['14', '16', '18', '19']
-  #    name: Test Node ${{ matrix.node }}
-  #    steps:
-  #      - uses: actions/checkout@v3
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: ${{ matrix.node }}
-  #
-  #      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
-  #      - uses: actions/cache@v3
-  #        id: cache-node-modules
-  #        with:
-  #          path: ./node_modules
-  #          key: ${{ runner.os }}-${{ matrix.node }}-modules-${{ hashFiles('package-lock.json') }}
-  #
-  #      - name: Install packages
-  #        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-  #        run: npm ci
-  #
-  #      - name: Run Tests
-  #        run: npm test
+  # Run code-style checks
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+      - uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install packages
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run Linters
+        run: npm run lint
+
+  # Run tests
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['14', '16', '18', '19']
+    name: Test Node ${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+      - uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-${{ matrix.node }}-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install packages
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test
 
   # Test building binaries
   binaries:
@@ -101,12 +101,12 @@ jobs:
 
   # Test building binaries on MacOS
   binaries-macos:
-    #    needs: [lint, test]
+    # NOTE: This is disabled for now since Rosetta cannot be installed on the macos runners and we're running into issues…
+    if: false
+    needs: [lint, test]
     name: Binaries MacOS (build)
     runs-on: macos-12
     steps:
-      - run: softwareupdate --install-rosetta
-
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
