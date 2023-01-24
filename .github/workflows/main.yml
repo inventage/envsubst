@@ -96,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: dist
-          name: arm64-binaries
+          name: linux-binaries
           retention-days: 1
 
   # Test building binaries on MacOS
