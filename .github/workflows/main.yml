@@ -63,7 +63,7 @@ jobs:
 
   # Test building binaries
   binaries:
-    #    needs: [lint, test]
+    needs: [lint, test]
     name: Binaries (build)
     runs-on: ubuntu-latest
     steps:
