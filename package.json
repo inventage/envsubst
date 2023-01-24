@@ -36,6 +36,7 @@
     "dist-arm:linux": "pkg -t node18-linux-arm64 --out-path dist/linux-arm64 .",
     "dist-arm-macos:macos": "pkg -t node18-macos-arm64 --out-path dist/macos-arm64 .",
     "fetch": "run-p -l fetch:*",
+    "fetch-arm": "run-p -l fetch-arm:*",
     "fetch-arm-macos": "run-p -l fetch-arm-macos:*",
     "fetch:alpine": "pkg-fetch -f -n node18 -p alpine -a x64",
     "fetch:linux": "pkg-fetch -f -n node18 -p linux -a x64",
