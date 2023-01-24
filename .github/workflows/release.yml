@@ -18,9 +18,20 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run dist
+
+      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+      - uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install packages
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Create Binaries
+        run: npm run dist
 
       - name: Upload Linux Binary
         uses: actions/upload-release-asset@v1.0.2
