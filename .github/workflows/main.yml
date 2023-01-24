@@ -92,6 +92,12 @@ jobs:
       - name: Create Binaries (arm64)
         run: npm run dist-arm
 
+      - name: 'Upload Binaries'
+        uses: actions/upload-artifact@v3
+        with:
+          path: dist
+          retention-days: 1
+
   # Test building binaries on MacOS
   binaries-macos:
     #    needs: [lint, test]
