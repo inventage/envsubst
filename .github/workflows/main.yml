@@ -116,3 +116,9 @@ jobs:
 
       - name: Create Binaries (arm64)
         run: npm run dist-arm-macos
+
+      - name: 'Upload Binaries'
+        uses: actions/upload-artifact@v3
+        with:
+          path: dist
+          retention-days: 1
