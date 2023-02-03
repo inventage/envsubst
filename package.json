@@ -12,7 +12,8 @@
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "main": "src/utils.js",
+  "type": "module",
+  "exports": "./src/utils.js",
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
@@ -20,48 +21,57 @@
     "bin",
     "src"
   ],
-  "engines": {
-    "node": ">=14.14"
-  },
   "scripts": {
     "clean": "rimraf dist",
-    "dist": "npm run clean && npm run fetch && run-s -l dist:*",
+    "build": "esbuild bin/envsubst.js --platform=node --outfile=dist/envsubst.cjs --define:import.meta.url=__dirname",
+    "dist": "npm run clean && npm run build && npm run fetch && run-s -l dist:*",
     "dist-arm": "npm run clean && npm run fetch-arm && run-s -l dist-arm:*",
     "dist-arm-macos": "npm run clean && npm run fetch-arm-macos && run-s -l dist-arm-macos:*",
-    "dist:alpine": "pkg -t node18-alpine-x64 --out-path dist/alpine .",
-    "dist:linux": "pkg -t node18-linux-x64 --out-path dist/linux .",
-    "dist:macos": "pkg -t node18-macos-x64 --out-path dist/macos .",
-    "dist:win": "pkg -t node18-win-x64 --out-path dist/win .",
-    "dist-arm:alpine": "pkg -t node18-alpine-arm64 --out-path dist/alpine-arm64 .",
-    "dist-arm:linux": "pkg -t node18-linux-arm64 --out-path dist/linux-arm64 .",
-    "dist-arm-macos:macos": "pkg -t node18-macos-arm64 --out-path dist/macos-arm64 .",
+    "dist-arm-macos:macos": "pkg -t node18-macos-arm64 --out-path dist/macos-arm64 dist/envsubst.cjs",
+    "dist-arm:alpine": "pkg -t node18-alpine-arm64 --out-path dist/alpine-arm64 dist/envsubst.cjs",
+    "dist-arm:linux": "pkg -t node18-linux-arm64 --out-path dist/linux-arm64 dist/envsubst.cjs",
+    "dist:alpine": "pkg -t node18-alpine-x64 --out-path dist/alpine dist/envsubst.cjs",
+    "dist:linux": "pkg -t node18-linux-x64 --out-path dist/linux dist/envsubst.cjs",
+    "dist:macos": "pkg -t node18-macos-x64 --out-path dist/macos dist/envsubst.cjs",
+    "dist:win": "pkg -t node18-win-x64 --out-path dist/win dist/envsubst.cjs",
     "fetch": "run-p -l fetch:*",
     "fetch-arm": "run-p -l fetch-arm:*",
     "fetch-arm-macos": "run-p -l fetch-arm-macos:*",
+    "fetch-arm-macos:macos": "pkg-fetch -f -n node18 -p macos -a arm64",
+    "fetch-arm:alpine": "pkg-fetch -f -n node18 -p alpine -a arm64",
+    "fetch-arm:linux": "pkg-fetch -f -n node18 -p linux -a arm64",
     "fetch:alpine": "pkg-fetch -f -n node18 -p alpine -a x64",
     "fetch:linux": "pkg-fetch -f -n node18 -p linux -a x64",
     "fetch:macos": "pkg-fetch -f -n node18 -p macos -a x64",
-    "fetch-arm:alpine": "pkg-fetch -f -n node18 -p alpine -a arm64",
-    "fetch-arm:linux": "pkg-fetch -f -n node18 -p linux -a arm64",
-    "fetch-arm-macos:macos": "pkg-fetch -f -n node18 -p macos -a arm64",
     "fetch:win": "pkg-fetch -f -n node18 -p win -a x64",
-    "format": "prettier '**/*.js' --write",
-    "lint": "prettier '**/*.js' --check",
+    "format": "run-p -l format:*",
+    "format:eslint": "eslint --ext .js,.mjs,.cjs . --fix",
+    "format:prettier": "prettier '**/*.js' --write",
+    "format:prettier-package-json": "npx prettier-package-json --write",
+    "lint": "run-p -l lint:*",
+    "lint:eslint": "eslint --ext .js,.mjs,.cjs .",
+    "lint:prettier": "prettier '**/*.js' --check",
+    "lint:prettier-package-json": "npx prettier-package-json -l",
     "prepare": "husky install",
     "test": "ava"
   },
   "dependencies": {
     "cli-table3": "^0.6.3",
-    "escape-string-regexp": "^4.0.0",
-    "globby": "^11.1.0",
-    "meow": "^9.0.0",
+    "escape-string-regexp": "^5.0.0",
+    "globby": "^13.1.3",
+    "meow": "^11.0.0",
     "string.prototype.matchall": "^4.0.8"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
     "ava": "^5.1.1",
     "dotenv": "^16.0.3",
-    "execa": "^5.1.1",
+    "esbuild": "^0.17.5",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-unicorn": "^45.0.2",
+    "execa": "^6.1.0",
     "fs-extra": "^11.1.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.0",
@@ -81,6 +91,9 @@
     "variables",
     "vars"
   ],
+  "engines": {
+    "node": ">=14.14"
+  },
   "publishConfig": {
     "access": "public"
   }

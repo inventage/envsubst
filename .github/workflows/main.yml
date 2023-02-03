@@ -89,6 +89,9 @@ jobs:
       - name: Create Binaries
         run: npm run dist
 
+      - name: Test Binaries
+        run:
+
       - name: 'Upload Binaries'
         uses: actions/upload-artifact@v3
         with:
@@ -106,9 +109,9 @@ jobs:
           name: linux-arm64-binaries
           retention-days: 1
 
-  # Test building binaries on MacOS
+  # Test building binaries on macOS
   binaries-macos:
-    # NOTE: This is disabled for now since Rosetta cannot be installed on the macos runners and we're running into issues…
+    # NOTE: This is disabled for now since Rosetta cannot be installed on the macOS runners, and we're running into issues…
     if: false
     needs: [lint, test]
     name: Binaries MacOS (build)

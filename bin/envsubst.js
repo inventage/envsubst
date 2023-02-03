@@ -1,9 +1,17 @@
 #!/usr/bin/env node
-const meow = require('meow');
-const fs = require('fs');
-const globby = require('globby');
-const Table = require('cli-table3');
-const { replaceVars } = require('../src/utils');
+import * as fs from 'node:fs';
+import meow from 'meow';
+import { globby } from 'globby';
+import Table from 'cli-table3';
+
+import { replaceVariables } from '../src/utils.js';
+
+let url = import.meta.url;
+// Allow rewriting `import.meta.url` to `__dirname` when bundling with esbuild
+// @see https://github.com/vercel/pkg/issues/1291#issuecomment-1360586986
+if (!url.startsWith('file://')) {
+  url = new URL(`file://${import.meta.url}`).toString();
+}
 
 const cli = meow(
   `
@@ -21,6 +29,9 @@ const cli = meow(
     $ envsubst 'dist/**/*.js' -p FOO_
 `,
   {
+    importMeta: {
+      url,
+    },
     flags: {
       dryRun: {
         type: 'boolean',
@@ -46,29 +57,29 @@ const cli = meow(
   }
 );
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 (async () => {
   /** @type string[] */
   const files = await globby(cli.input);
   const replacements = [];
 
   for (const file of files) {
-    const content = fs.readFileSync(file, 'utf-8');
-    const [replaced, replacementsMade] = await replaceVars(content, process.env, cli.flags.prefix, cli.flags.window, cli.flags.ignoreCase);
+    const content = fs.readFileSync(file, 'utf8');
+    const [replaced, replacementsMade] = await replaceVariables(content, process.env, cli.flags.prefix, cli.flags.window, cli.flags.ignoreCase);
 
-    replacementsMade.forEach(r =>
+    for (const r of replacementsMade)
       replacements.push({
         filename: file,
         name: r.from,
         value: r.to,
-      })
-    );
+      });
 
     if (!cli.flags.dryRun) {
-      fs.writeFileSync(file, replaced, 'utf-8');
+      fs.writeFileSync(file, replaced, 'utf8');
     }
   }
 
-  if (replacements.length < 1) {
+  if (replacements.length === 0) {
     console.info('No variable replacements made.');
     return;
   }
@@ -83,9 +94,9 @@ const cli = meow(
   });
 
   console.info(`Made ${replacements.length} replacement${replacements.length > 1 ? 's' : ''}:\n`);
-  replacements.forEach(replacement => {
+  for (const replacement of replacements) {
     const { filename, name, value } = replacement;
     table.push([filename, name, value]);
-  });
+  }
   console.info(table.toString());
 })();
