@@ -8,6 +8,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   # Run code-style checks
@@ -60,82 +61,3 @@ jobs:
 
       - name: Run Tests
         run: npm test
-
-  # Test building binaries
-  binaries:
-    needs: [lint, test]
-    name: Binaries (build)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
-      - uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install packages
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Create Binaries
-        run: npm run dist
-
-      - name: 'Upload Binaries'
-        uses: actions/upload-artifact@v3
-        with:
-          path: dist
-          name: linux-binaries
-          retention-days: 1
-
-      - name: Create Binaries (arm64)
-        run: npm run dist-arm
-
-      - name: 'Upload Binaries (arm64)'
-        uses: actions/upload-artifact@v3
-        with:
-          path: dist
-          name: linux-arm64-binaries
-          retention-days: 1
-
-  # Test building binaries on MacOS
-  binaries-macos:
-    # NOTE: This is disabled for now since Rosetta cannot be installed on the macos runners and we're running into issues…
-    if: false
-    needs: [lint, test]
-    name: Binaries MacOS (build)
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
-      - uses: actions/cache@v3
-        id: cache-node-modules
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install packages
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Create Binaries (arm64)
-        run: npm run dist-arm-macos
-
-      - name: 'Upload Binaries'
-        uses: actions/upload-artifact@v3
-        with:
-          path: dist
-          name: macos-arm64-binaries
-          retention-days: 1
