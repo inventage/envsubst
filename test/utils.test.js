@@ -2,11 +2,11 @@ const test = require('ava');
 const { variableRegexPattern, replaceVars } = require('../src/utils');
 
 test('pattern without placeholder', t => {
-  t.is(variableRegexPattern(), '\\${(\\w+)(:-([^\\s}]*))?}');
+  t.is(variableRegexPattern(), '\\${(\\w+)(:-([^}]*))?}');
 });
 
 test('pattern with placeholder', t => {
-  t.is(variableRegexPattern('FOO_'), '\\${(FOO_\\w+)(:-([^\\s}]*))?}');
+  t.is(variableRegexPattern('FOO_'), '\\${(FOO_\\w+)(:-([^}]*))?}');
 });
 
 test('simple replacements ', async t => {
@@ -63,6 +63,11 @@ test('prefix replacements', async t => {
   [replaced, replacements] = await replaceVars(`\${VAR}\n\${FOO_2:-bar}`, { VAR: 'foo', FOO_2: 'baz' }, 'FOO_');
   t.is(replaced, `\${VAR}\nbaz`);
   t.deepEqual(replacements, [{ from: '${FOO_2:-bar}', to: 'baz', count: 1 }]);
+
+  // Default values can have spaces
+  [replaced, replacements] = await replaceVars(`\${FOO_2:-Hello world}`, {}, 'FOO_');
+  t.is(replaced, 'Hello world');
+  t.deepEqual(replacements, [{ from: '${FOO_2:-Hello world}', to: 'Hello world', count: 1 }]);
 });
 
 test('prefix replacements (case insensitive)', async t => {
@@ -145,8 +150,11 @@ test('complex replacements', async t => {
   ]);
 
   [replaced, replacements] = await replaceVars(`\${VAR:-yes? }\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });
-  t.is(replaced, `\${VAR:-yes? }\nbaz`);
-  t.deepEqual(replacements, [{ from: '${FOO:-bar}', to: 'baz', count: 1 }]);
+  t.is(replaced, `foo\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${VAR:-yes? }', to: 'foo', count: 1 },
+    { from: '${FOO:-bar}', to: 'baz', count: 1 },
+  ]);
 
   [replaced, replacements] = await replaceVars(`\${VAR:-yes}\n\${FOO:-bar}`, { VAR: 'foo', FOO: 'baz' });
   t.is(replaced, `foo\nbaz`);
@@ -197,8 +205,11 @@ test('complex replacements (case insensitive)', async t => {
   ]);
 
   [replaced, replacements] = await replaceVars(`\${var:-yes? }\n\${foo:-bar}`, { VAR: 'foo', FOO: 'baz' }, '', false, true);
-  t.is(replaced, `\${var:-yes? }\nbaz`);
-  t.deepEqual(replacements, [{ from: '${foo:-bar}', to: 'baz', count: 1 }]);
+  t.is(replaced, `foo\nbaz`);
+  t.deepEqual(replacements, [
+    { from: '${var:-yes? }', to: 'foo', count: 1 },
+    { from: '${foo:-bar}', to: 'baz', count: 1 },
+  ]);
 
   [replaced, replacements] = await replaceVars(`\${Var:-yes}\n\${fOO:-bar}`, { var: 'foo', foo: 'baz' }, '', false, true);
   t.is(replaced, `foo\nbaz`);
@@ -255,7 +266,7 @@ test('replacements with window[] trimming', async t => {
   }
 });
 
-test.only('replacements with window[] trimming (case insensitive)', async t => {
+test('replacements with window[] trimming (case insensitive)', async t => {
   const testCases = [
     ['window["${var:-bla}"]', { VAR: 'foo' }, '"foo"', [{ from: 'window["${var:-bla}"]', to: '"foo"', count: 1 }]],
     ['window["${VAR:-bla}"]; window["${BAZ}"]', { var: 'foo' }, '"foo"; window["${BAZ}"]', [{ from: 'window["${VAR:-bla}"]', to: '"foo"', count: 1 }]],

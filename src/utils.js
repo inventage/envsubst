@@ -18,7 +18,7 @@ const toLowerKeys = obj => {
  * @returns {string}
  */
 const variableRegexPattern = (prefix = '') => {
-  return `\\\${(${prefix ? escapeStringRegexp(prefix) : ''}\\w+)(:-([^\\s}]*))?}`;
+  return `\\\${(${prefix ? escapeStringRegexp(prefix) : ''}\\w+)(:-([^}]*))?}`;
 };
 
 /**
