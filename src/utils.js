@@ -1,11 +1,11 @@
-const matchAll = require('string.prototype.matchall');
+import matchAll from 'string.prototype.matchall';
 matchAll.shim();
 
-const escapeStringRegexp = require('escape-string-regexp');
+import escapeStringRegexp from 'escape-string-regexp';
 
-const toLowerKeys = obj => {
-  return Object.keys(obj).reduce((accumulator, key) => {
-    accumulator[key.toLowerCase()] = obj[key];
+const toLowerKeys = object => {
+  return Object.keys(object).reduce((accumulator, key) => {
+    accumulator[key.toLowerCase()] = object[key];
     return accumulator;
   }, {});
 };
@@ -45,9 +45,9 @@ const windowVariableRegexPattern = (prefix = '') => {
  * @param {boolean} ignoreCase
  * @returns {Promise<unknown[]>}
  */
-const replaceVars = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) =>
+const replaceVariables = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) =>
   new Promise(resolve => {
-    resolve(replaceVarsSync(string, variables, prefix, trimWindow, ignoreCase));
+    resolve(replaceVariablesSync(string, variables, prefix, trimWindow, ignoreCase));
   });
 
 /**
@@ -61,7 +61,7 @@ const replaceVars = (string, variables = {}, prefix = '', trimWindow = false, ig
  * @param {boolean} ignoreCase
  * @returns {unknown[]}
  */
-const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) => {
+const replaceVariablesSync = (string, variables = {}, prefix = '', trimWindow = false, ignoreCase = false) => {
   const regex = new RegExp(trimWindow ? windowVariableRegexPattern(prefix) : variableRegexPattern(prefix), ignoreCase ? 'gmi' : 'gm');
   const matches = [...string.matchAll(regex)];
   const lowercaseVariables = toLowerKeys(variables);
@@ -125,8 +125,4 @@ const replaceVarsSync = (string, variables = {}, prefix = '', trimWindow = false
   return [replaced, replacements];
 };
 
-module.exports = {
-  variableRegexPattern,
-  replaceVars,
-  replaceVarsSync,
-};
+export { variableRegexPattern, replaceVariables, replaceVariablesSync };

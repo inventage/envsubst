@@ -12,7 +12,8 @@
   "bugs": {
     "url": "https://github.com/inventage/envsubst/issues"
   },
-  "main": "src/utils.js",
+  "type": "module",
+  "exports": "./src/utils.js",
   "bin": {
     "envsubst": "./bin/envsubst.js"
   },
@@ -31,16 +32,16 @@
   },
   "dependencies": {
     "cli-table3": "^0.6.3",
-    "escape-string-regexp": "^4.0.0",
-    "globby": "^11.1.0",
-    "meow": "^9.0.0",
+    "escape-string-regexp": "^5.0.0",
+    "globby": "^13.2.2",
+    "meow": "^12.0.1",
     "string.prototype.matchall": "^4.0.8"
   },
   "devDependencies": {
     "@types/node": "^20.4.9",
     "ava": "^5.3.1",
     "dotenv": "^16.3.1",
-    "execa": "^5.1.1",
+    "execa": "^7.2.0",
     "fs-extra": "^11.1.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",

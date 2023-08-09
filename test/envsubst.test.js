@@ -1,12 +1,15 @@
-const fs = require('fs');
-const fse = require('fs-extra');
-const rimraf = require('rimraf');
-const path = require('path');
-const dotenv = require('dotenv');
-const test = require('ava');
-const execa = require('execa');
+import fs from 'node:fs';
+import { ensureDir, copy } from 'fs-extra/esm';
+import { rimraf } from 'rimraf';
+import dotenv from 'dotenv';
+import test from 'ava';
+import { execa } from 'execa';
+import { fileURLToPath } from 'node:url';
+import * as path from 'node:path';
 
-const pkg = require('../package.json');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const package_ = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'package.json'), 'utf8'));
 
 const REPO_DIR = path.resolve(__dirname, '..');
 const FIXTURES_DIR = path.resolve(__dirname, 'fixtures');
@@ -14,8 +17,8 @@ const TEMP_DIR = path.resolve(__dirname, '__tmp');
 const CLI_FILE = `${REPO_DIR}/bin/envsubst.js`;
 
 // Copy fixtures into a temporary directory
-fse.mkdirsSync(TEMP_DIR);
-fse.copySync(FIXTURES_DIR, TEMP_DIR);
+await ensureDir(TEMP_DIR);
+await copy(FIXTURES_DIR, TEMP_DIR);
 
 // Cleanup by removing the temporary directory after we're done
 test.after.always('cleanup', () => {
@@ -29,58 +32,58 @@ test('writes a message when no parameters were given', async t => {
 
 test('shows a help text', async t => {
   const { stdout } = await execa(CLI_FILE, ['--help']);
-  t.assert(stdout.includes(pkg.description));
+  t.assert(stdout.includes(package_.description));
   t.assert(stdout.includes('$ envsubst <glob>'));
 });
 
 test('shows a version', async t => {
   const { stdout } = await execa(CLI_FILE, ['--version']);
-  t.is(stdout, pkg.version);
+  t.is(stdout, package_.version);
 });
 
-const fixturesDir = fs
+const fixtureDirectories = fs
   .readdirSync(TEMP_DIR)
   .map(file => path.resolve(TEMP_DIR, file))
   .filter(path => fs.lstatSync(path).isDirectory());
 
-fixturesDir.forEach(fixtureDir => {
-  const fixtureBasename = path.basename(fixtureDir);
-  const useWindowSyntaxParam = fixtureBasename.indexOf('_w') !== -1;
-  const useIgnoreCaseParam = fixtureBasename.indexOf('_i') !== -1;
+for (const fixtureDirectory of fixtureDirectories) {
+  const fixtureBasename = path.basename(fixtureDirectory);
+  const useWindowSyntaxParameter = fixtureBasename.includes('_w');
+  const useIgnoreCaseParameter = fixtureBasename.includes('_i');
 
   let fixtureBasenameWithoutSuffix = fixtureBasename;
-  if (useWindowSyntaxParam) {
+  if (useWindowSyntaxParameter) {
     fixtureBasenameWithoutSuffix = fixtureBasename.replace('_w', '');
   }
 
-  if (useIgnoreCaseParam) {
+  if (useIgnoreCaseParameter) {
     fixtureBasenameWithoutSuffix = fixtureBasename.replace('_i', '');
   }
 
-  const given = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}`);
-  const envFile = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}.env`);
-  const expected = path.resolve(fixtureDir, `${fixtureBasenameWithoutSuffix}_expected`);
+  const given = path.resolve(fixtureDirectory, `${fixtureBasenameWithoutSuffix}`);
+  const environmentFile = path.resolve(fixtureDirectory, `${fixtureBasenameWithoutSuffix}.env`);
+  const expected = path.resolve(fixtureDirectory, `${fixtureBasenameWithoutSuffix}_expected`);
 
   test(`all fixture files exists in fixture directory "${fixtureBasename}"`, t => {
     t.assert(fs.existsSync(given));
-    t.assert(fs.existsSync(envFile));
+    t.assert(fs.existsSync(environmentFile));
     t.assert(fs.existsSync(expected));
   });
 
-  const params = [given];
-  if (useWindowSyntaxParam) {
-    params.unshift('--window');
+  const parameters = [given];
+  if (useWindowSyntaxParameter) {
+    parameters.unshift('--window');
   }
 
-  if (useIgnoreCaseParam) {
-    params.unshift('--ignore-case');
+  if (useIgnoreCaseParameter) {
+    parameters.unshift('--ignore-case');
   }
 
   test(`replaces variables in fixture "${fixtureBasename}"`, async t => {
-    await execa(CLI_FILE, params, {
-      env: dotenv.parse(fs.readFileSync(envFile, 'utf-8')),
+    await execa(CLI_FILE, parameters, {
+      env: dotenv.parse(fs.readFileSync(environmentFile, 'utf8')),
     });
 
     t.is(fs.readFileSync(given, 'utf8'), fs.readFileSync(expected, 'utf8'));
   });
-});
+}
