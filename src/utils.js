@@ -4,6 +4,7 @@ matchAll.shim();
 import escapeStringRegexp from 'escape-string-regexp';
 
 const toLowerKeys = object => {
+  // eslint-disable-next-line unicorn/no-array-reduce
   return Object.keys(object).reduce((accumulator, key) => {
     accumulator[key.toLowerCase()] = object[key];
     return accumulator;

@@ -48,6 +48,7 @@ const cli = meow(
   }
 );
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 (async () => {
   /** @type string[] */
   const files = await globby(cli.input);
