@@ -303,3 +303,40 @@ test('replacements with window[] trimming (case insensitive)', async t => {
     t.deepEqual(replacements, replacementsShould);
   }
 });
+
+test('can use spaces in default values', async t => {
+  const defaultValue = 'foo bar';
+  let [replaced, replacements] = await replaceVariables(`\${VAR:-${defaultValue}}`);
+  t.is(replaced, defaultValue);
+  t.deepEqual(replacements, [{ from: `\${VAR:-${defaultValue}}`, to: defaultValue, count: 1 }]);
+});
+
+test('can use spaces in default values (prefix)', async t => {
+  const defaultValue = 'foo bar';
+  const [replaced, replacements] = await replaceVariables(`\${PREFIX_VAR:-${defaultValue}}`, {}, 'PREFIX_');
+  t.is(replaced, defaultValue);
+  t.deepEqual(replacements, [{ from: `\${PREFIX_VAR:-${defaultValue}}`, to: defaultValue, count: 1 }]);
+});
+
+test('can use spaces in default values (window)', async t => {
+  const defaultValue = 'foo bar';
+  const [replaced, replacements] = await replaceVariables(`window["$\{VAR:-${defaultValue}}"]`, {}, '', true);
+  t.is(replaced, `"${defaultValue}"`);
+  t.deepEqual(replacements, [{ from: `window["$\{VAR:-${defaultValue}}"]`, to: `"${defaultValue}"`, count: 1 }]);
+});
+
+test('can replace variable placeholders that have spaces in default values', async t => {
+  const defaultValue = 'foo bar';
+  const variable = 'bar baz';
+  const [replaced, replacements] = await replaceVariables(`\${VAR:-${defaultValue}}`, { VAR: variable });
+  t.is(replaced, variable);
+  t.deepEqual(replacements, [{ from: `\${VAR:-${defaultValue}}`, to: variable, count: 1 }]);
+});
+
+test('can replace variable placeholders that have spaces in default values (prefix)', async t => {
+  const defaultValue = 'foo bar';
+  const variable = 'bar baz';
+  const [replaced, replacements] = await replaceVariables(`\${PREFIX_VAR:-${defaultValue}}`, { PREFIX_VAR: variable }, 'PREFIX_');
+  t.is(replaced, variable);
+  t.deepEqual(replacements, [{ from: `\${PREFIX_VAR:-${defaultValue}}`, to: variable, count: 1 }]);
+});
