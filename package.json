@@ -37,7 +37,7 @@
     "cli-table3": "^0.6.3",
     "escape-string-regexp": "^5.0.0",
     "globby": "^13.2.2",
-    "meow": "^12.1.1",
+    "meow": "^13.0.0",
     "string.prototype.matchall": "^4.0.10"
   },
   "devDependencies": {
