@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       # @see https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
       - uses: actions/cache@v4
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['16', '18', '20']
+        node: ['18', '20', '22']
     name: Test Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v4
