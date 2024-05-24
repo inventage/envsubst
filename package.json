@@ -69,7 +69,7 @@
     "vars"
   ],
   "engines": {
-    "node": ">=16.17.0"
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
