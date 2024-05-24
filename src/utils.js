@@ -1,6 +1,3 @@
-import matchAll from 'string.prototype.matchall';
-matchAll.shim();
-
 import escapeStringRegexp from 'escape-string-regexp';
 
 const toLowerKeys = object => {

@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import test from 'ava';
 import { execa } from 'execa';
 import { fileURLToPath } from 'node:url';
-import * as path from 'node:path';
+import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
